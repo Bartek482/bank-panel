@@ -1,123 +1,151 @@
 import { useState } from 'react';
-import Transfer from './Transfer';
-import { users } from '../data/users';
-import '../css/Dashboard.css';
+import '../css/Transfer.css';
 
-function Dashboard({ user, onLogout }) {
-    const [showTransfer, setShowTransfer] = useState(false);
-    const [account, setAccount] = useState(user);
-    const [allUsers, setAllUsers] = useState(users);
+function Transfer({ user, onBack, onTransfer }) {
+    const [form, setForm] = useState({
+        recipient: '',
+        account: '',
+        title: 'Przelew środków',
+        amount: '',
+        date: new Date().toISOString().split('T')[0],
+    });
+    const [step, setStep] = useState(1);
+    const [error, setError] = useState('');
 
-    const handleTransfer = (form) => {
-        const amount = parseFloat(form.amount);
-        const updatedSenderBalance = account.balance - amount;
-        const newSenderHistory = [
-            {
-                date: new Date().toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-                title: form.recipient,
-                category: 'Przelew wychodzący',
-                amount: -amount,
-            },
-            ...account.history,
-        ];
-
-        const updatedSender = {
-            ...account,
-            balance: updatedSenderBalance,
-            history: newSenderHistory,
-        };
-
-        // aktualizacja odbiorcy (jeśli numer konta istnieje w bazie)
-        const updatedUsers = allUsers.map((u) => {
-            if (u.accountNumber === form.account) {
-                const newRecipientHistory = [
-                    {
-                        date: new Date().toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-                        title: account.name,
-                        category: 'Przelew przychodzący',
-                        amount: amount,
-                    },
-                    ...u.history,
-                ];
-                return {
-                    ...u,
-                    balance: u.balance + amount,
-                    history: newRecipientHistory,
-                };
-            }
-            if (u.login === updatedSender.login) {
-                return updatedSender;
-            }
-            return u;
-        });
-
-        setAccount(updatedSender);
-        setAllUsers(updatedUsers);
-        setShowTransfer(false);
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    if (showTransfer) {
-        return <Transfer user={account} onBack={() => setShowTransfer(false)} onTransfer={handleTransfer} />;
-    }
+    const validate = () => {
+        const { recipient, account, amount } = form;
+        if (!recipient.trim() || !account.trim() || !amount) {
+            return 'Uzupełnij wszystkie wymagane pola';
+        }
+        if (!/^\d{26}$/.test(account)) {
+            return 'Numer rachunku musi mieć dokładnie 26 cyfr';
+        }
+        if (parseFloat(amount) <= 0) {
+            return 'Kwota musi być większa niż 0';
+        }
+        return '';
+    };
+
+    const handleNext = () => {
+        const validationError = validate();
+        if (validationError) {
+            setError(validationError);
+        } else {
+            setError('');
+            setStep(2);
+        }
+    };
+
+    const handleConfirm = async () => {
+        const transferData = {
+            from: user.login,
+            toAccount: form.account,
+            amount: parseFloat(form.amount),
+            title: form.title,
+            recipientName: form.recipient,
+        };
+
+        try {
+            const res = await fetch('http://localhost:3001/transfer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(transferData),
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                onTransfer(form);
+            } else {
+                alert(data.message || 'Błąd wykonania przelewu');
+            }
+        } catch (err) {
+            alert('Nie udało się połączyć z serwerem');
+        }
+    };
 
     return (
-        <div className="dashboard">
-            <header className="dashboard-header">
-                <div className="header-left">
-                    <img src="https://www.pekao24.pl/pekao/img/logo.svg" alt="Bank Pekao" className="logo" />
-                    <nav className="menu">
-                        <span>Pekao24</span>
-                        <span>Płatności</span>
-                        <span>Historia</span>
-                        <span>Twoje produkty</span>
-                    </nav>
-                </div>
-                <div className="header-right">
-                    <span className="username">{account.name}</span>
-                    <button className="logout" onClick={onLogout}>Wyloguj</button>
-                </div>
-            </header>
+        <div className="transfer-form">
+            <h2>Nowy przelew</h2>
 
-            <main className="account-panel">
-                <section className="account-box">
-                    <h2>EUROKONTO INTRO</h2>
-                    <p className="account-number">{account.accountNumber}</p>
-                    <p className="balance-label">Dostępne środki</p>
-                    <p className="balance-value">{account.balance.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN</p>
-                    <div className="actions">
-                        <button className="btn red" onClick={() => setShowTransfer(true)}>Nowy przelew</button>
-                        <button className="btn outline">Historia rachunku</button>
+            {step === 1 && (
+                <div className="form-fields">
+                    <div className="field">
+                        <label>Do odbiorcy</label>
+                        <input
+                            name="recipient"
+                            value={form.recipient}
+                            onChange={handleChange}
+                            placeholder="Wpisz imię i nazwisko"
+                        />
                     </div>
-                </section>
+                    <div className="field">
+                        <label>Na rachunek</label>
+                        <input
+                            name="account"
+                            value={form.account}
+                            onChange={handleChange}
+                            placeholder="Wpisz numer rachunku odbiorcy (26 cyfr)"
+                        />
+                    </div>
+                    <div className="field">
+                        <label>Tytuł</label>
+                        <input
+                            name="title"
+                            value={form.title}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className="field-group">
+                        <div className="field">
+                            <label>Kwota</label>
+                            <input
+                                name="amount"
+                                type="number"
+                                value={form.amount}
+                                onChange={handleChange}
+                                placeholder="Wpisz kwotę"
+                            />
+                        </div>
+                        <div className="field">
+                            <label>Data przelewu</label>
+                            <input
+                                name="date"
+                                type="date"
+                                value={form.date}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </div>
+                    {error && <div className="error-message">{error}</div>}
+                    <div className="actions">
+                        <button className="btn outline" onClick={onBack}>Anuluj</button>
+                        <button className="btn red" onClick={handleNext}>Dalej</button>
+                    </div>
+                </div>
+            )}
 
-                <section className="history-box">
-                    <h3>Historia operacji</h3>
-                    <table className="transactions">
-                        <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Odbiorca / Nadawca / Tytuł</th>
-                            <th>Kategoria</th>
-                            <th>Kwota</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {account.history.map((item, idx) => (
-                            <tr key={idx}>
-                                <td>{item.date}</td>
-                                <td>{item.title}</td>
-                                <td>{item.category}</td>
-                                <td className={item.amount < 0 ? 'negative' : 'positive'}>
-                                    {item.amount.toFixed(2)} PLN
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </section>
-            </main>
+            {step === 2 && (
+                <div className="summary">
+                    <h3>Potwierdzenie przelewu</h3>
+                    <p><strong>Odbiorca:</strong> {form.recipient}</p>
+                    <p><strong>Numer rachunku:</strong> {form.account}</p>
+                    <p><strong>Kwota:</strong> {parseFloat(form.amount).toFixed(2)} PLN</p>
+                    <p><strong>Data przelewu:</strong> {form.date}</p>
+                    <p><strong>Tytuł:</strong> {form.title}</p>
+
+                    <div className="actions">
+                        <button className="btn outline" onClick={() => setStep(1)}>Wstecz</button>
+                        <button className="btn red" onClick={handleConfirm}>Zatwierdź</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-export default Dashboard;
+export default Transfer;

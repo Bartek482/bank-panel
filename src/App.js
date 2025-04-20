@@ -16,14 +16,17 @@ function App() {
     }
   };
 
-  const handleLogin = () => {
-    const user = users.find(
-        (u) => u.login === username && u.password === password
-    );
-    if (user) {
-      setLoggedInUser(user);
+  const handleLogin = async () => {
+    const res = await fetch('http://localhost:3001/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login: username, password }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setLoggedInUser(data.user);
     } else {
-      setError('Niepoprawny login lub hasło');
+      setError(data.message);
     }
   };
 
