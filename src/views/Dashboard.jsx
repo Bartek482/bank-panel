@@ -1,4 +1,4 @@
-import '../App.css';
+import '../css/Dashboard.css';
 
 function Dashboard({ user, onLogout }) {
     return (
