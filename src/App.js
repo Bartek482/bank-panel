@@ -1,16 +1,43 @@
 import './App.css';
 import { useState } from 'react';
+import { users } from './data/users';
+import Dashboard from './views/Dashboard';
 
 function App() {
   const [step, setStep] = useState(1);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [error, setError] = useState('');
 
   const handleNext = () => {
     if (step === 1 && username.trim()) {
       setStep(2);
     }
   };
+
+  const handleLogin = () => {
+    const user = users.find(
+        (u) => u.login === username && u.password === password
+    );
+    if (user) {
+      setLoggedInUser(user);
+    } else {
+      setError('Niepoprawny login lub hasło');
+    }
+  };
+
+  const handleLogout = () => {
+    setLoggedInUser(null);
+    setUsername('');
+    setPassword('');
+    setStep(1);
+    setError('');
+  };
+
+  if (loggedInUser) {
+    return <Dashboard user={loggedInUser} onLogout={handleLogout} />;
+  }
 
   return (
       <div className="app-container">
@@ -47,7 +74,8 @@ function App() {
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 <a href="#" className="link">Nie pamiętasz hasła?</a>
-                <button className="button">Zaloguj się</button>
+                <button className="button" onClick={handleLogin}>Zaloguj się</button>
+                {error && <div className="error-message">{error}</div>}
               </>
           )}
 
@@ -63,4 +91,3 @@ function App() {
 }
 
 export default App;
-
