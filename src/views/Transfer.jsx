@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import Transfer from './Transfer';
+import { users } from '../data/users';
 import '../css/Dashboard.css';
 
 function Dashboard({ user, onLogout }) {
     const [showTransfer, setShowTransfer] = useState(false);
     const [account, setAccount] = useState(user);
+    const [allUsers, setAllUsers] = useState(users);
 
     const handleTransfer = (form) => {
         const amount = parseFloat(form.amount);
-        const updatedBalance = account.balance - amount;
-        const newHistory = [
+        const updatedSenderBalance = account.balance - amount;
+        const newSenderHistory = [
             {
                 date: new Date().toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' }),
                 title: form.recipient,
@@ -18,7 +20,39 @@ function Dashboard({ user, onLogout }) {
             },
             ...account.history,
         ];
-        setAccount({ ...account, balance: updatedBalance, history: newHistory });
+
+        const updatedSender = {
+            ...account,
+            balance: updatedSenderBalance,
+            history: newSenderHistory,
+        };
+
+        // aktualizacja odbiorcy (jeśli numer konta istnieje w bazie)
+        const updatedUsers = allUsers.map((u) => {
+            if (u.accountNumber === form.account) {
+                const newRecipientHistory = [
+                    {
+                        date: new Date().toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+                        title: account.name,
+                        category: 'Przelew przychodzący',
+                        amount: amount,
+                    },
+                    ...u.history,
+                ];
+                return {
+                    ...u,
+                    balance: u.balance + amount,
+                    history: newRecipientHistory,
+                };
+            }
+            if (u.login === updatedSender.login) {
+                return updatedSender;
+            }
+            return u;
+        });
+
+        setAccount(updatedSender);
+        setAllUsers(updatedUsers);
         setShowTransfer(false);
     };
 
