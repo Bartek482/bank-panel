@@ -46,16 +46,12 @@ function App() {
       <div className="app-container">
         <div className="card">
           <div className="card-header">
-            <h2>Logowanie do Pekao24</h2>
-            <div className="flags">
-              <span role="img" aria-label="UK">🇬🇧</span>
-              <span role="img" aria-label="UA">🇺🇦</span>
-            </div>
+            <h2>Logowanie do Banku</h2>
           </div>
 
           {step === 1 && (
               <>
-                <label className="label">Wpisz numer klienta / nazwę użytkownika</label>
+                <label className="label">Wpisz numer klienta</label>
                 <input
                     type="text"
                     className="input"
@@ -82,12 +78,6 @@ function App() {
               </>
           )}
 
-          <div className="info">
-            <p><span className="date">15.04.2025</span> Planujesz wyjazd na majówkę? Uważaj  oszuści szykują dla Ciebie ofertę. <a href="#">Więcej &gt;</a></p>
-            <p><span className="date">03.03.2025</span> Bezpieczne hasło, czyli jakie? Sprawdź, jak stworzyć silne hasło. <a href="#">Więcej &gt;</a></p>
-          </div>
-
-          <div className="security">Bezpieczeństwo</div>
         </div>
       </div>
   );

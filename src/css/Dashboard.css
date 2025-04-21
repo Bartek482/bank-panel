@@ -7,7 +7,7 @@
 
 /* Nagłówek */
 .dashboard-header {
-    background-color: #c00;
+    background-color: green;
     color: white;
     display: flex;
     justify-content: space-between;
@@ -56,7 +56,7 @@
 
 .logout:hover {
     background: white;
-    color: #c00;
+    color: green;
 }
 
 /* Panel główny */
@@ -76,7 +76,7 @@
 }
 
 .account-number {
-    font-size: 14px;
+    font-size: 28px;
     color: #666;
     margin: 4px 0 12px;
 }
@@ -107,22 +107,22 @@
 }
 
 .btn.red {
-    background-color: #c00;
+    background-color: green;
     color: white;
 }
 
 .btn.red:hover {
-    background-color: #a00;
+    background-color: lawngreen;
 }
 
 .btn.outline {
     background-color: transparent;
-    border: 1px solid #c00;
-    color: #c00;
+    border: 1px solid green;
+    color: green;
 }
 
 .btn.outline:hover {
-    background-color: #f9dcdc;
+    background-color: lawngreen;
 }
 
 /* Historia transakcji */
@@ -153,7 +153,7 @@
 }
 
 .negative {
-    color: #c00;
+    color: green;
     font-weight: bold;
 }
 

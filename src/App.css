@@ -54,7 +54,7 @@ body {
   display: inline-block;
   margin-bottom: 16px;
   font-size: 14px;
-  color: #c00;
+  color: green;
   text-decoration: none;
 }
 
@@ -64,7 +64,7 @@ body {
 
 .button {
   width: 100%;
-  background-color: #c00;
+  background-color: green;
   color: white;
   font-weight: bold;
   padding: 12px;
@@ -75,7 +75,7 @@ body {
 }
 
 .button:hover {
-  background-color: #a00;
+  background-color: lawngreen;
 }
 
 .info {
@@ -91,7 +91,10 @@ body {
 
 .security {
   margin-top: 20px;
-  color: #c00;
+  color: green;
   font-weight: bold;
   font-size: 14px;
+}
+.error-message {
+  padding-top: 20px;
 }

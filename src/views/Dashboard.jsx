@@ -30,9 +30,8 @@ function Dashboard({ user, onLogout }) {
         <div className="dashboard">
             <header className="dashboard-header">
                 <div className="header-left">
-                    <img src="https://www.pekao24.pl/pekao/img/logo.svg" alt="Bank Pekao" className="logo" />
                     <nav className="menu">
-                        <span>Pekao24</span>
+                        <span>Bank</span>
                         <span>Płatności</span>
                         <span>Historia</span>
                         <span>Twoje produkty</span>
@@ -46,7 +45,7 @@ function Dashboard({ user, onLogout }) {
 
             <main className="account-panel">
                 <section className="account-box">
-                    <h2>EUROKONTO INTRO</h2>
+                    <h2>Konto</h2>
                     <p className="account-number">{account.accountNumber}</p>
                     <p className="balance-label">Dostępne środki</p>
                     <p className="balance-value">{account.balance.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN</p>
