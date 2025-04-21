@@ -12,7 +12,8 @@ function Dashboard({ user, onLogout }) {
         const newHistory = [
             {
                 date: new Date().toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-                title: form.recipient,
+                recipientName: form.recipient,
+                title: form.title,
                 category: 'Przelew wychodzący',
                 amount: -amount,
             },
@@ -70,7 +71,10 @@ function Dashboard({ user, onLogout }) {
                         {account.history.map((item, idx) => (
                             <tr key={idx}>
                                 <td>{item.date}</td>
-                                <td>{item.title}</td>
+                                <td>
+                                    {item.recipientName && <strong>{item.recipientName}</strong>}<br />
+                                    {item.title}
+                                </td>
                                 <td>{item.category}</td>
                                 <td className={item.amount < 0 ? 'negative' : 'positive'}>
                                     {item.amount.toFixed(2)} PLN
