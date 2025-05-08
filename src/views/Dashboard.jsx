@@ -16,6 +16,8 @@ function Dashboard({ user, onLogout }) {
                 title: form.title,
                 category: 'Przelew wychodzący',
                 amount: -amount,
+                sender: account.login,
+                recipient: form.account,
             },
             ...account.history,
         ];
@@ -75,7 +77,9 @@ function Dashboard({ user, onLogout }) {
                                     {item.recipientName && <strong>{item.recipientName}</strong>}<br />
                                     {item.title}
                                 </td>
-                                <td>{item.category}</td>
+                                <td>
+                                    {item.sender === account.login ? 'Przelew wychodzący' : 'Przelew przychodzący'}
+                                </td>
                                 <td className={item.amount < 0 ? 'negative' : 'positive'}>
                                     {item.amount.toFixed(2)} PLN
                                 </td>

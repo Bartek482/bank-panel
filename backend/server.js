@@ -30,7 +30,7 @@ app.post('/login', (req, res) => {
     );
 });
 
-// przelew z zapisem historii
+// przelew
 app.post('/transfer', (req, res) => {
     const { from, toAccount, amount, title, recipientName } = req.body;
     const date = new Date().toISOString().split('T')[0];

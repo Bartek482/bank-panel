@@ -1,6 +1,5 @@
 import './App.css';
 import { useState } from 'react';
-import { users } from './data/users';
 import Dashboard from './views/Dashboard';
 
 function App() {
